@@ -1,5 +1,13 @@
 /**
+ * riot框架基础工具类
+ */
+
+
+/**
  * Specialized function for looping an array-like collection with `each={}`
+ *
+ * 专门用于`each={}`指令实现类数组的遍历函数
+ *
  * @param   { Array } els - collection of items
  * @param   {Function} fn - callback function
  * @returns { Array } the array looped
@@ -10,6 +18,7 @@ function each(els, fn) {
   for (var i = 0, el; i < len; i++) {
     el = els[i]
     // return false -> current item was removed by fn during the loop
+    // 是否会出现死循环？
     if (el != null && fn(el, i) === false) i--
   }
   return els
@@ -34,6 +43,7 @@ function getOuterHTML(el) {
   // some browsers do not support outerHTML on the SVGs tags
   else {
     var container = mkEl('div')
+    // node.cloneNode默认返回一个元素的深度克隆的副本，但利用js绑定的事件不会被拷贝
     container.appendChild(el.cloneNode(true))
     return container.innerHTML
   }
@@ -48,6 +58,7 @@ function setInnerHTML(container, html) {
   if (typeof container.innerHTML != T_UNDEF) container.innerHTML = html
   // some browsers do not support innerHTML on the SVGs tags
   else {
+    // DOMParser可以将字符串形式的XML或HTML源代码解析成为一个DOM文档
     var doc = new DOMParser().parseFromString(html, 'application/xml')
     container.appendChild(
       container.ownerDocument.importNode(doc.documentElement, true)
@@ -85,6 +96,9 @@ function remAttr(dom, name) {
 
 /**
  * Convert a string containing dashes to camel case
+ *
+ * 参数驼峰化
+ *
  * @param   { String } string - input string
  * @returns { String } my-string -> myString
  */
@@ -120,6 +134,9 @@ function setAttr(dom, name, val) {
 
 /**
  * Detect the tag implementation by a DOM node
+ *
+ * 检测一个dom节点是否为自定义标签，分别根据`data-is`属性、`riot-tag`属性、标签名称三种方式判定
+ *
  * @param   { Object } dom - DOM node we need to parse to get its tag implementation
  * @returns { Object } it returns an object containing the implementation of a custom tag (template and boot function)
  */
@@ -129,6 +146,9 @@ function getTag(dom) {
 }
 /**
  * Add a child tag to its parent into the `tags` object
+ *
+ * 为父级组件添加一个子组件
+ *
  * @param   { Object } tag - child tag instance
  * @param   { String } tagName - key where the new tag will be stored
  * @param   { Object } parent - tag instance where the new child tag will be included
@@ -137,6 +157,7 @@ function addChildTag(tag, tagName, parent) {
   var cachedTag = parent.tags[tagName]
 
   // if there are multiple children tags having the same name
+  // 同类型子标签需要特殊处理一下
   if (cachedTag) {
     // if the parent tags property is not yet an array
     // create it adding the first cached tag
@@ -166,6 +187,7 @@ function moveChildTag(tag, tagName, newPos) {
 
   tags = parent.tags[tagName]
 
+  // splice的妙用，第二个参数如果为0，即表示在某个位置插入某一个元素
   if (isArray(tags))
     tags.splice(newPos, 0, tags.splice(tags.indexOf(tag), 1)[0])
   else addChildTag(tag, tagName, parent)
@@ -173,6 +195,9 @@ function moveChildTag(tag, tagName, newPos) {
 
 /**
  * Create a new child tag including it correctly into its parent
+ *
+ * 创建一个新的孩子节点，并准确的与其父节点关联
+ *
  * @param   { Object } child - child tag implementation
  * @param   { Object } opts - tag options containing the DOM node where the tag will be mounted
  * @param   { String } innerHTML - inner html of the child node
@@ -204,6 +229,9 @@ function initChildTag(child, opts, innerHTML, parent) {
 
 /**
  * Loop backward all the parents tree to detect the first custom parent tag
+ *
+ * 获取最顶层的parent对象
+ *
  * @param   { Object } tag - a Tag instance
  * @returns { Object } the instance of the first custom parent tag found
  */
@@ -304,6 +332,9 @@ function isWritable(obj, key) {
 
 /**
  * With this function we avoid that the internal Tag methods get overridden
+ *
+ * 避免riot内部方法被重写
+ *
  * @param   { Object } data - options we want to use to extend the tag instance
  * @returns { Object } clean object without containing the riot internal reserved words
  */
@@ -354,6 +385,9 @@ function walkAttributes(html, fn) {
 
 /**
  * Check whether a DOM node is in stub mode, useful for the riot 'if' directive
+ *
+ * stub模式：一种代码占位模式，使用的时候再载入真正的代码
+ *
  * @param   { Object }  dom - DOM node we want to parse
  * @returns { Boolean } -
  */
