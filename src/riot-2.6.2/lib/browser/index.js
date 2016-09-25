@@ -53,13 +53,14 @@ riot.mixin = (function() {
  * @param   { String }   name - name/id of the new riot tag
  * @param   { String }   html - tag template
  * @param   { String }   css - custom tag css
- * @param   { String }   attrs - root tag attributes
+ * @param   { String }   attrs - root tag attributes 直接写在标签上的属性，如：id、class、if指令
  * @param   { Function } fn - user function
  * @returns { String } name/id of the tag just created
  */
 riot.tag = function(name, html, css, attrs, fn) {
   if (isFunction(attrs)) {
     fn = attrs
+    // 'attr="xxx"'的判定，决定是否为属性参数
     if (/^[\w\-]+\s?=/.test(css)) {
       attrs = css
       css = ''
@@ -108,6 +109,7 @@ riot.mount = function(selector, tagName, opts) {
   function addRiotTags(arr) {
     var list = ''
     each(arr, function (e) {
+      // 普通标签但添加了`riot-tag`或`data-is`属性
       if (!/[^-\w]/.test(e)) {
         e = e.trim().toLowerCase()
         list += ',[' + RIOT_TAG_IS + '="' + e + '"],[' + RIOT_TAG + '="' + e + '"]'
@@ -126,15 +128,18 @@ riot.mount = function(selector, tagName, opts) {
       var riotTag = getAttr(root, RIOT_TAG_IS) || getAttr(root, RIOT_TAG)
 
       // have tagName? force riot-tag to be the same
+      // 强制名称统一
       if (tagName && riotTag !== tagName) {
         riotTag = tagName
         setAttr(root, RIOT_TAG_IS, tagName)
         setAttr(root, RIOT_TAG, tagName) // this will be removed in riot 3.0.0
       }
+
+      // 标签加载
       var tag = mountTo(root, riotTag || root.tagName.toLowerCase(), opts)
 
       if (tag) tags.push(tag)
-    } else if (root.length) {
+    } else if (root.length) { // 数组
       each(root, pushTags)   // assume nodeList
     }
   }
@@ -144,6 +149,7 @@ riot.mount = function(selector, tagName, opts) {
   // inject styles into DOM
   styleManager.inject()
 
+  // 无第二参数，即直接挂载某个标签，如：riot.mount('tab', {});
   if (isObject(tagName)) {
     opts = tagName
     tagName = 0
@@ -153,7 +159,7 @@ riot.mount = function(selector, tagName, opts) {
   if (typeof selector === T_STRING) {
     if (selector === '*')
       // select all the tags registered
-      // and also the tags found with the riot-tag attribute set
+      // and also the tags found with the riot-tag/data-is attribute set
       selector = allTags = selectAllTags()
     else
       // or just the ones named like the selector

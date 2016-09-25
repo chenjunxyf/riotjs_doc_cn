@@ -539,6 +539,7 @@ function mountTo(root, tagName, opts) {
   // clear the inner html
   root.innerHTML = ''
 
+  // 生成tag对象
   if (tag && root) tag = new Tag(tag, { root: root, opts: opts }, innerHTML)
 
   if (tag && tag.mount) {
