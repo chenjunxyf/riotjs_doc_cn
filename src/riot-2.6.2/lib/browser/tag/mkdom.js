@@ -74,6 +74,8 @@ var mkdom = (function _mkdom() {
   /*
     Replace the yield tag from any tag template with the innerHTML of the
     original tag in the page
+
+    yield功能from->to的关联
   */
   function replaceYield(templ, html) {
     // do nothing if no yield

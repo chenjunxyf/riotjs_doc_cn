@@ -1,14 +1,22 @@
+/**
+ * 核心Tag类
+ *
+ * @param { Object } impl - tag基础数据：名称、模板、属性、处理函数
+ * @param { Object } conf - tag基础配置
+ * @param { String } innerHTML - tag挂载元素（root）的内部内容
+ *
+ */
 function Tag(impl, conf, innerHTML) {
 
   var self = riot.observable(this),
-    opts = inherit(conf.opts) || {},
-    parent = conf.parent,
+    opts = inherit(conf.opts) || {}, // 简单原型继承
+    parent = conf.parent, // 父级标签标识
     isLoop = conf.isLoop,
     hasImpl = conf.hasImpl,
     item = cleanUpData(conf.item),
     expressions = [],
     childTags = [],
-    root = conf.root,
+    root = conf.root, // 挂载点
     tagName = root.tagName.toLowerCase(),
     attr = {},
     propsInSyncWithParent = [],
@@ -27,6 +35,7 @@ function Tag(impl, conf, innerHTML) {
 
   // create a unique id to this tag
   // it could be handy to use it also to improve the virtual dom rendering speed
+  // 给每个自定义标签赋值一个唯一id
   defineProperty(this, '_riot_id', ++__uid) // base 1 allows test !t._riot_id
 
   extend(this, { parent: parent, root: root, opts: opts}, item)
@@ -40,6 +49,7 @@ function Tag(impl, conf, innerHTML) {
     if (tmpl.hasExpr(val)) attr[el.name] = val
   })
 
+  // 创建dom
   dom = mkdom(impl.tmpl, innerHTML)
 
   // options
