@@ -10,7 +10,7 @@ riot.observable = function(el) {
   /**
    * Private variables
    */
-  var callbacks = {},
+  var callbacks = {}, // 事件回调对象
     slice = Array.prototype.slice
 
   /**
@@ -49,6 +49,7 @@ riot.observable = function(el) {
 
         onEachEvent(events, function(name, pos) {
           (callbacks[name] = callbacks[name] || []).push(fn)
+          // 回调被多个事件公用，加上一个标识
           fn.typed = pos > 0
         })
 
@@ -70,7 +71,7 @@ riot.observable = function(el) {
         if (events == '*' && !fn) callbacks = {}
         else {
           onEachEvent(events, function(name, pos) {
-            if (fn) {
+            if (fn) { // 如果指定监听的函数，则找到并删除
               var arr = callbacks[name]
               for (var i = 0, cb; cb = arr && arr[i]; ++i) {
                 if (cb == fn) arr.splice(i--, 1)
@@ -130,6 +131,7 @@ riot.observable = function(el) {
           for (var i = 0, fn; fn = fns[i]; ++i) {
             if (fn.busy) continue
             fn.busy = 1
+            // xx函数被yy事件触发
             fn.apply(el, fn.typed ? [name].concat(args) : args)
             if (fns[i] !== fn) { i-- }
             fn.busy = 0
