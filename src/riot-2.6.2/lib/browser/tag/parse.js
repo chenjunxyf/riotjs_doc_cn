@@ -36,7 +36,7 @@ function parseExpressions(root, tag, expressions) {
     var type = dom.nodeType,
       attr
 
-    // text node
+    // 1: Element  2: Attribute 3: Text
     if (type == 3 && dom.parentNode.tagName != 'STYLE') addExpr(dom, dom.nodeValue)
     if (type != 1) return
 
@@ -45,6 +45,7 @@ function parseExpressions(root, tag, expressions) {
     // loop
     attr = getAttr(dom, 'each')
 
+    // each循环处理
     if (attr) { _each(dom, tag, attr); return false }
 
     // attribute expressions

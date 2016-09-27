@@ -49,11 +49,12 @@ function Tag(impl, conf, innerHTML) {
     if (tmpl.hasExpr(val)) attr[el.name] = val
   })
 
-  // 创建dom
+  // 生成dom结构
   dom = mkdom(impl.tmpl, innerHTML)
 
-  // options
+  // 解析挂载根对象上的属性，其中：值属性和表达式属性区分处理，最后结果保存到opts对象里
   function updateOpts() {
+    // 当前上下文对象，如果是子标签，则当前上下文指向其父亲
     var ctx = hasImpl && isLoop ? self : parent || self
 
     // update opts from current DOM attributes
@@ -67,6 +68,7 @@ function Tag(impl, conf, innerHTML) {
     })
   }
 
+  // 标准化数据
   function normalizeData(data) {
     for (var key in item) {
       if (typeof self[key] !== T_UNDEF && isWritable(self, key))
@@ -74,6 +76,7 @@ function Tag(impl, conf, innerHTML) {
     }
   }
 
+  // 与父级同步的属性处理
   function inheritFrom(target) {
     each(Object.keys(target), function(k) {
       // some properties must be always in sync with the parent tag
@@ -90,6 +93,9 @@ function Tag(impl, conf, innerHTML) {
 
   /**
    * Update the tag expressions and options
+   *
+   * 表达式和属性更新操作
+   *
    * @param   { * }  data - data we want to use to extend the tag properties
    * @param   { Boolean } isInherited - is this update coming from a parent tag?
    * @returns { self }
@@ -109,15 +115,19 @@ function Tag(impl, conf, innerHTML) {
       item = data
     }
     extend(self, data)
+    // 更新配置
     updateOpts()
+
+    // 触发`update`事件
     self.trigger('update', data)
+    // 更新表达式 update.js
     update(expressions, self)
 
     // the updated event will be triggered
     // once the DOM will be ready and all the re-flows are completed
     // this is useful if you want to get the "real" root properties
     // 4 ex: root.offsetWidth ...
-    if (isInherited && self.parent)
+    if (isInherited && self.parent) // 如果有父亲，会监听父级的更新事件，单项数据流
       // closes #1599
       self.parent.one('updated', function() { self.trigger('updated') })
     else rAF(function() { self.trigger('updated') })
@@ -131,6 +141,7 @@ function Tag(impl, conf, innerHTML) {
         props = [],
         obj
 
+      // 如果是字符串就从全局中取mix对象
       mix = typeof mix === T_STRING ? riot.mixin(mix) : mix
 
       // check if the mixin is a function
@@ -139,6 +150,7 @@ function Tag(impl, conf, innerHTML) {
         instance = new mix()
       } else instance = mix
 
+      // Object.getPrototypeOf() 返回指定对象的原型
       var proto = Object.getPrototypeOf(instance)
 
       // build multilevel prototype inheritance chain property list
@@ -171,6 +183,7 @@ function Tag(impl, conf, innerHTML) {
     return this
   })
 
+  // 标签挂载
   defineProperty(this, 'mount', function() {
 
     updateOpts()
@@ -188,7 +201,7 @@ function Tag(impl, conf, innerHTML) {
       inheritFrom(self._parent)
     }
 
-    // initialiation
+    // 初始化执行标签的回调函数
     if (impl.fn) impl.fn.call(self, opts)
 
     // parse layout after init. fn may calculate args for nested custom tags
@@ -225,6 +238,7 @@ function Tag(impl, conf, innerHTML) {
       parseNamedElements(self.root, self.parent, null, true)
 
     // if it's not a child tag we can trigger its mount event
+    // 非子标签，直接触发加载事件
     if (!self.parent || self.parent.isMounted) {
       self.isMounted = true
       self.trigger('mount')
@@ -240,7 +254,7 @@ function Tag(impl, conf, innerHTML) {
     })
   })
 
-
+  // 标签卸载
   defineProperty(this, 'unmount', function(keepRootTag) {
     var el = root,
       p = el.parentNode,
@@ -293,8 +307,7 @@ function Tag(impl, conf, innerHTML) {
     toggle()
     self.off('*')
     self.isMounted = false
-    delete root._tag
-
+    delete root._tag 
   })
 
   // proxy function to bind updates
@@ -307,6 +320,7 @@ function Tag(impl, conf, innerHTML) {
     each(childTags, function(child) { child[isMount ? 'mount' : 'unmount']() })
 
     // listen/unlisten parent (events flow one way from parent to children)
+    // 单向数据流
     if (!parent) return
     var evt = isMount ? 'on' : 'off'
 

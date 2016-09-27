@@ -10,6 +10,7 @@ var mkdom = (function _mkdom() {
     reHasYield  = /<yield\b/i,
     reYieldAll  = /<yield\s*(?:\/>|>([\S\s]*?)<\/yield\s*>|>)/ig,
     reYieldSrc  = /<yield\s+to=['"]([^'">]*)['"]\s*>([\S\s]*?)<\/yield\s*>/ig,
+    // (?:)表示非捕获性量词
     reYieldDest = /<yield\s+from=['"]?([-\w]+)['"]?\s*(?:\/>|>([\S\s]*?)<\/yield\s*>)/ig
   var
     rootEls = { tr: 'tbody', th: 'tr', td: 'tr', col: 'colgroup' },
@@ -84,6 +85,7 @@ var mkdom = (function _mkdom() {
     // be careful with #1343 - string on the source having `$1`
     var src = {}
 
+    // 从内部html中提取出`to`极其内部内容，存到src对象
     html = html && html.replace(reYieldSrc, function (_, ref, text) {
       src[ref] = src[ref] || text   // preserve first definition
       return ''
@@ -91,6 +93,7 @@ var mkdom = (function _mkdom() {
 
     return templ
       .replace(reYieldDest, function (_, ref, def) {  // yield with from - to attrs
+        // 如果内部有`to`就走src[ref]，否则走内部内容
         return src[ref] || def || ''
       })
       .replace(reYieldAll, function (_, def) {        // yield without any "from"
