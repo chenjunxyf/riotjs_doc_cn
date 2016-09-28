@@ -37,6 +37,7 @@ function parseExpressions(root, tag, expressions) {
       attr
 
     // 1: Element  2: Attribute 3: Text
+    // 普通的文本节点无attributes
     if (type == 3 && dom.parentNode.tagName != 'STYLE') addExpr(dom, dom.nodeValue)
     if (type != 1) return
 
@@ -53,6 +54,7 @@ function parseExpressions(root, tag, expressions) {
       var name = attr.name,
         bool = name.split('__')[1]
 
+      // 依据dom属性丰富添加表达式属性
       addExpr(dom, attr.value, { attr: bool || name, bool: bool })
       if (bool) { remAttr(dom, name); return false }
 

@@ -14,6 +14,7 @@ var styleManager = (function(_riot) {
     setAttr(newNode, 'type', 'text/css')
 
     // replace any user node or insert the new one into the head
+    // 用于样式挂载位置的占位
     var userNode = $('style[type=riot]')
     if (userNode) {
       if (userNode.id) newNode.id = userNode.id

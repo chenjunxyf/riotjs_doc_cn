@@ -35,6 +35,7 @@ function setEventHandler(name, handler, dom, tag) {
       e.returnValue = false
     }
 
+    // preventUpdate内部组织更新冒泡
     if (!e.preventUpdate) {
       el = item ? getImmediateCustomParentTag(ptag) : tag
       el.update()
@@ -79,6 +80,7 @@ function update(expressions, tag) {
 
     // #1638: regression of #1612, update the dom only if the value of the
     // expression was changed
+    // 只有表达式的值改变的时候才继续下面的更新操作，保证性能
     if (expr.value === value) {
       return
     }
@@ -119,7 +121,7 @@ function update(expressions, tag) {
     if (isFunction(value)) {
       setEventHandler(attrName, value, dom, tag)
 
-    // if- conditional
+    // if- conditional if指令
     } else if (attrName == 'if') {
       var stub = expr.stub,
         add = function() { insertTo(stub.parentNode, stub, dom) },
@@ -150,7 +152,7 @@ function update(expressions, tag) {
 
         dom.inStub = true
       }
-    // show / hide
+    // show / hide 通过样式来控制显示/隐藏
     } else if (attrName === 'show') {
       dom.style.display = value ? '' : 'none'
 
