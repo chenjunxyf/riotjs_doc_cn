@@ -1,21 +1,11 @@
 <test id="test">
-  <h3>{ message }</h3>
- <ul>
-   <li each={ techs }>{ name }</li>
- </ul>
+ <h3 if={2>1}>{ message }</h3>
 
  <script>
    this.message = 'Hello, Riot!';
-   this.techs = [
-     { name: 'HTML' },
-     { name: 'JavaScript' },
-     { name: 'CSS' }
-   ];
 
-   this.on('test1 test2', function(data, params) {
-     console.log('test event');
-     console.log(data);
-     console.log(params);
+   this.on('mount', function() {
+     console.log('mount!!!');
    });
  </script>
 

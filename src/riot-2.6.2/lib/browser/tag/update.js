@@ -119,6 +119,7 @@ function update(expressions, tag) {
 
     // event handler
     if (isFunction(value)) {
+      // 属性绑定了一个函数
       setEventHandler(attrName, value, dom, tag)
 
     // if- conditional if指令
