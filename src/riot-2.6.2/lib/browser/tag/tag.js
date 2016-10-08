@@ -42,7 +42,7 @@ function Tag(impl, conf, innerHTML) {
   // protect the "tags" property from being overridden
   defineProperty(this, 'tags', {})
 
-  // grab attributes
+  // 将表达式属性存储下来，用于后续`optdateOpts`操作
   each(root.attributes, function(el) {
     var val = el.value
     // remember attributes with expressions only
@@ -307,7 +307,7 @@ function Tag(impl, conf, innerHTML) {
     toggle()
     self.off('*')
     self.isMounted = false
-    delete root._tag 
+    delete root._tag
   })
 
   // proxy function to bind updates

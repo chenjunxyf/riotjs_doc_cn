@@ -113,12 +113,13 @@ function _each(dom, parent, expr) {
     tags = [],
     oldItems = [],
     hasKeys,
+    // 实验性功能，无需循环的最外层标签时使用
     isVirtual = dom.tagName == 'VIRTUAL'
 
   // parse the each expression
   expr = tmpl.loopKeys(expr)
 
-  // insert a marked where the loop tags will be injected
+  // 创建一个插入的占位节点
   root.insertBefore(ref, dom)
 
   // clean template code
@@ -131,7 +132,7 @@ function _each(dom, parent, expr) {
   }).on('update', function () {
     // get the new items collection
     var items = tmpl(expr.val, parent),
-      // create a fragment to hold the new DOM nodes to inject in the parent tag
+      // 创建一个fragment来添加遍历的dom节点，最后统一插入到页面上，提高性能
       frag = document.createDocumentFragment()
 
     // object loop. any changes cause full redraw
@@ -195,7 +196,7 @@ function _each(dom, parent, expr) {
         pos = i // handled here so no move
       } else tag.update(item, true)
 
-      // reorder the tag if it's not located in its previous position
+      // dom节点改变与数据同步
       if (
         pos !== i && _mustReorder &&
         tags[i] // fix 1581 unable to reproduce it in a test!

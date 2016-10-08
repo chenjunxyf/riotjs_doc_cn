@@ -9,17 +9,22 @@
   <script src="../../riot.js"></script>
 </head>
 <body>
-  <div id="node" class="xx" list="xxx"></div>
-  <textarea id="textarea" name="name" rows="8" cols="40"></textarea>
 
   <div style="width: 1000px; margin: 0 auto;">
     <div riot-tag="test"></div>
+
+    <div riot-tag="eachtest"></div>
   </div>
 
   <script src="./test.js"></script>
+  <script src="./eachTest.js"></script>
 
   <script>
-  var testObj = riot.mount('test', {name: 'feifei'})[0];
+  // var testObj = riot.mount('test', {name: 'feifei'})[0];
+  </script>
+
+  <script>
+  riot.mount('eachtest', {});
   </script>
 </body>
 </html>
