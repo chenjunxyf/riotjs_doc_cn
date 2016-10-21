@@ -20,11 +20,31 @@
   <script src="./eachTest.js"></script>
 
   <script>
+  var SharedMixin = {
+    observableObj: riot.observable()
+  };
+  riot.mixin(SharedMixin);
+  </script>
+
+  <script>
   // var testObj = riot.mount('test', {name: 'feifei'})[0];
   </script>
 
   <script>
-  riot.mount('eachtest', {});
+  var eachObj = riot.mount('eachtest', {})[0];
+  </script>
+
+  <script>
+  var o = riot.observable()
+  function doSomething() {
+    console.log('parent')
+    o.on('event', function() {
+      console.log('child')
+    })
+    o.trigger('event')
+  }
+  o.on('event', doSomething)
+  o.trigger('event')
   </script>
 </body>
 </html>
